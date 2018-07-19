@@ -20,7 +20,7 @@ IMPLIMENTATION:
 >> Every Minute data is getting collected : [Total keys pressed/released count, Which keys are pressed/Released , Mouse moved cound and its coordinate]
 >> Total count of all the process has been saved and loaded using "msg-pack" and "Pandas module".
 >> Data has been saved in "EmployeeData.msg" with respective everyminute.
->> Implimentation of "Preditcion of performance" is under development.... 
+>> Implimentation of "Prediction of performance" is under development.... 
 
 
 It Is Under Development...Its little baby learning...Wait For Full Version
