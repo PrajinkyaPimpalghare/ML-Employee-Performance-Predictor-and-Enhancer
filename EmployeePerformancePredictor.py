@@ -7,13 +7,12 @@ class EmployeePerformancePredictor(object):
     def __init__(self):
         self.key_listener = None
         self.mouse_listener = None
-        self.column = ["PRESSED CHAR", "PRESSED COUNT", "RELEASED CHAR", "RELEASED COUNT", "MOUSE MOVE COUNT",
+        self.column = ["DATE","TIME", "PRESSED CHAR", "PRESSED COUNT", "RELEASED CHAR", "RELEASED COUNT", "MOUSE MOVE COUNT",
                        "MOUSE CLICKED COUNT", "MOUSE SCROLLED COUNT", "FINAL COUNT"]
-        self.data_frame = pd.DataFrame()
         try:
-            self.data_frame = pd.read_msgpack("EmployeeData.msg")
+            self.data_frame = pd.read_msgpack("EmployeeRawData.msg")
         except:
-            pass
+            self.data_frame = pd.DataFrame()
         self.key_pressed = []
         self.key_released = []
         self.key_pressed_count = 0
@@ -24,6 +23,7 @@ class EmployeePerformancePredictor(object):
         self.count = 0
         self.data = []
         self.index = pd.datetime.now().strftime("%y/%m/%d_%H:%M")
+        self.date_index = pd.datetime.now().strftime("%y/%m/%d")
 
     def start_processing(self):
         while True:
@@ -34,24 +34,17 @@ class EmployeePerformancePredictor(object):
             while self.index == pd.datetime.now().strftime("%y/%m/%d_%H:%M"):
                 pass
             self.count = self.key_pressed_count + self.mouse_move_count + self.mouse_clicked_count + self.mouse_scrolled_count
-            self.data = [["N/A", self.key_pressed_count, "N/A", self.key_released_count,
+            self.data = [[self.index.split("_")[0], self.index.split("_")[1],"N/A", self.key_pressed_count, "N/A", self.key_released_count,
                           self.mouse_move_count, self.mouse_clicked_count, self.mouse_scrolled_count, self.count]]
             if self.data_frame.empty:
-                self.data_frame = pd.DataFrame(data=self.data, columns=self.column, index=[self.index])
+                self.data_frame = pd.DataFrame(data=self.data, columns=self.column)
             else:
-                self.data_frame = self.data_frame.append(
-                    pd.DataFrame(data=self.data, columns=self.column, index=[self.index]))
+                self.data_frame = self.data_frame.append(pd.DataFrame(data=self.data, columns=self.column))
             self.index = pd.datetime.now().strftime("%y/%m/%d_%H:%M")
             self.key_listener.stop()
             self.mouse_listener.stop()
-            print(self.data_frame)
             self.data_reset()
-            self.data_frame.to_msgpack("EmployeeData.msg")
-            # For Ploting Graph
-            # Plot_Graph = self.data_frame[['FINAL COUNT']].plot(kind='bar', title="Mouse Usage", figsize=(15, 10), legend=True, fontsize=12)
-            # Plot_Graph.set_xlabel("Minutes", fontsize=12)
-            # Plot_Graph.set_ylabel("Process Done", fontsize=12)
-            # plt.show()
+            self.data_frame.to_msgpack("EmployeeRawData.msg")
 
     def on_press(self, key):
         self.key_pressed_count += 1
